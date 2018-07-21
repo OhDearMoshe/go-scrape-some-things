@@ -10,9 +10,9 @@ import (
 )
 
 type ScrapeResult struct {
-	hostname string
-	paths    []string
-	err      error
+	Hostname string
+	Paths    []string
+	Err      error
 }
 
 func getHtmlFromUrl(url string) ([]byte, error) {
@@ -76,7 +76,7 @@ func Scrape(url string) []ScrapeResult {
 			results = append(results, result)
 			visited = append(visited, nextUrl)
 
-			toVisit = append(toVisit, GetNoneVisit(visited, result.paths)...)
+			toVisit = append(toVisit, GetNoneVisit(visited, result.Paths)...)
 		}
 	}
 
