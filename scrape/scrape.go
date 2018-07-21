@@ -39,13 +39,14 @@ func contains(list []string, s string) bool {
 	return false
 }
 
-func AppendNoneVisit(visited []string, urls []string) []string {
+func GetNoneVisit(visited []string, urls []string) []string {
+	var toVisit []string
 	for _, u := range urls {
 		if !contains(visited, u) {
-			visited = append(visited, u)
+			toVisit = append(toVisit, u)
 		}
 	}
-	return visited
+	return toVisit
 }
 
 func FetchPage(toVisit string, baseUrl string, hostname string) ScrapeResult {
@@ -61,7 +62,8 @@ func FetchPage(toVisit string, baseUrl string, hostname string) ScrapeResult {
 	return ScrapeResult{toVisit, urls, err}
 }
 
-func Scrape(url string, hostname string) []ScrapeResult {
+func Scrape(url string) []ScrapeResult {
+	hostname := hostnames.ExtractHostname(url)
 	var results []ScrapeResult
 	var visited []string
 	var toVisit = []string{url}
@@ -69,12 +71,13 @@ func Scrape(url string, hostname string) []ScrapeResult {
 		// Pop the next result
 		nextUrl := toVisit[0]
 		toVisit = toVisit[1:]
+		if !contains(visited, nextUrl) {
+			result := FetchPage(nextUrl, url, hostname)
+			results = append(results, result)
+			visited = append(visited, nextUrl)
 
-		result := FetchPage(nextUrl, url, hostname)
-		results = append(results, result)
-		visited = append(visited, nextUrl)
-
-		toVisit = AppendNoneVisit(toVisit, result.paths)
+			toVisit = append(toVisit, GetNoneVisit(visited, result.paths)...)
+		}
 	}
 
 	return results
