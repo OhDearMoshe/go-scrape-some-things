@@ -6,6 +6,7 @@ import (
 	"go-scrape-some-things/extract"
 	"errors"
 	"fmt"
+	"go-scrape-some-things/hostnames"
 )
 
 type ScrapeResult struct {
@@ -30,7 +31,23 @@ func getHtmlFromUrl(url string) ([]byte, error) {
 
 }
 
+func contains(list []string, s string) bool {
+	for _,item := range list {
+		if item == s {
+			return true
+		}
+	}
+	return false
+}
 
+func AppendNoneVisit(visited []string, urls []string) []string {
+	for _, u := range urls {
+		if !contains(visited, u) {
+			visited = append(visited, u)
+		}
+	}
+	return visited
+}
 
 func Scrape(url string, hostname string) []ScrapeResult {
 	var results []ScrapeResult
@@ -47,6 +64,7 @@ func Scrape(url string, hostname string) []ScrapeResult {
 			urls = extract.UrlsFromHtml(html)
 			log.Printf("Found %d adjacent pages from %q", len(urls), nextUrl)
 			// Filter Urls
+			urls = hostnames.FilterUrls(urls, hostname)
 			// Append to next
 		}
 
