@@ -30,32 +30,11 @@ func getHtmlFromUrl(url string) ([]byte, error) {
 
 }
 
-func contains(list []string, s string) bool {
-	for _, item := range list {
-		if item == s {
-			return true
-		}
-	}
-	return false
-}
-
-/**
-	Returns a list of all the results that are not present in the visited parameter
- */
-func GetNoneVisited(visited []string, urls []string) []string {
-	var toVisit []string
-	for _, u := range urls {
-		if !contains(visited, u) {
-			toVisit = append(toVisit, u)
-		}
-	}
-	return toVisit
-}
 /**
  	Goes to the given URL and visits the page, returns a ScrapeResult with
 	any child pages it has found and any errors it has encountered
  */
-func FetchPage(toVisit string, baseUrl string, hostname string) ScrapeResult {
+func FetchResult(toVisit string, baseUrl string, hostname string) ScrapeResult {
 	url := hostnames.SanatizeUrl(toVisit, baseUrl)
 	html, err := getHtmlFromUrl(url)
 	var urls []string
@@ -71,20 +50,19 @@ func FetchPage(toVisit string, baseUrl string, hostname string) ScrapeResult {
 func Scrape(url string) []ScrapeResult {
 	hostname := hostnames.ExtractHostname(url)
 	var results []ScrapeResult
-	var visited []string
+	history := History{}
 	toVisit := []string{url}
 
 	visitQueue := VisitQueue{toVisit}
 
 	for visitQueue.HasNext() {
-		// Pop the next result
 		nextUrl := visitQueue.GetNextToVisit()
-		if !contains(visited, nextUrl) {
-			result := FetchPage(nextUrl, url, hostname)
+		if history.HaveNotYetVisited(nextUrl) {
+			result := FetchResult(nextUrl, url, hostname)
 			results = append(results, result)
-			visited = append(visited, nextUrl)
+			history.MarkAsVisited(nextUrl)
 
-			visitQueue.AddMoreToVisit(GetNoneVisited(visited, result.Paths))
+			visitQueue.AddMoreToVisit(history.GetNonVisitedUrls(result.Paths))
 		}
 	}
 
