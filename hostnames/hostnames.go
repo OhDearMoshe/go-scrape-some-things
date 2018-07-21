@@ -24,6 +24,21 @@ func ExtractHostname(uri string) (string){
 	return u.Hostname()
 }
 
+
+/**
+	If url is just a path appends the baseUrl to it otherwise returns as normal
+	This is to help us follow links that are relative
+ */
+func SanatizeUrl(potentialPath string, baseUrl string) string {
+	if potentialPath[0] == '/' {
+		return baseUrl + potentialPath
+	}
+	return potentialPath
+}
+
+/**
+   Filters out any urls that are not owned by the current host
+ */
 func FilterUrls(urls []string, host string) []string {
 	var results []string
 	for _, u := range urls {

@@ -52,3 +52,20 @@ func TestFilterUrls(t *testing.T) {
 		}
 	}
 }
+
+
+func TestSanatizeUrl(t *testing.T) {
+	inputs := []struct {
+		in, out string
+	} {
+		{"/faq", "https://monzo.com/faq"},
+		{"https://monzo.com/blog", "https://monzo.com/blog"},
+	}
+
+	for _, input := range inputs {
+		result := SanatizeUrl(input.in, "https://monzo.com")
+		if result != input.out {
+			t.Fatalf("Error expected %q but got %q", input.out, result)
+		}
+	}
+}

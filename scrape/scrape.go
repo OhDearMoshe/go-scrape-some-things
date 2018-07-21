@@ -11,10 +11,9 @@ import (
 
 type ScrapeResult struct {
 	hostname string
-	paths []string
-	err error
+	paths    []string
+	err      error
 }
-
 
 func getHtmlFromUrl(url string) ([]byte, error) {
 	log.Printf("Attempting to retrieve content from %q", url)
@@ -32,7 +31,7 @@ func getHtmlFromUrl(url string) ([]byte, error) {
 }
 
 func contains(list []string, s string) bool {
-	for _,item := range list {
+	for _, item := range list {
 		if item == s {
 			return true
 		}
@@ -49,25 +48,33 @@ func AppendNoneVisit(visited []string, urls []string) []string {
 	return visited
 }
 
+func FetchPage(toVisit string, baseUrl string, hostname string) ScrapeResult {
+	url := hostnames.SanatizeUrl(toVisit, baseUrl)
+	html, err := getHtmlFromUrl(url)
+	var urls []string
+	if err == nil {
+		urls = extract.UrlsFromHtml(html)
+		urls = hostnames.FilterUrls(urls, hostname)
+		log.Printf("Found %d adjacent pages from %q", len(urls), toVisit)
+	}
+
+	return ScrapeResult{toVisit, urls, err}
+}
+
 func Scrape(url string, hostname string) []ScrapeResult {
 	var results []ScrapeResult
 	var visited []string
-	var toVisit = []string {url,}
+	var toVisit = []string{url}
 	for len(toVisit) > 0 {
+		// Pop the next result
 		nextUrl := toVisit[0]
 		toVisit = toVisit[1:]
 
-		html, err := getHtmlFromUrl(nextUrl)
+		result := FetchPage(nextUrl, url, hostname)
+		results = append(results, result)
 		visited = append(visited, nextUrl)
-		var urls []string
-		if err == nil {
-			urls = extract.UrlsFromHtml(html)
-			log.Printf("Found %d adjacent pages from %q", len(urls), nextUrl)
-			// Filter Urls
-			urls = hostnames.FilterUrls(urls, hostname)
-			// Append to next
-		}
 
+		toVisit = AppendNoneVisit(toVisit, result.paths)
 	}
 
 	return results
