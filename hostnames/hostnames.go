@@ -7,7 +7,7 @@ import (
 
 /**
 	Extracts the hostname from a given URL
-	aka https://www.facebook.com/some.path
+	aka https://www.facebook.com/some/path
 	will return just facebook.com.
 
 	Returns a blank string if it cannot

@@ -12,6 +12,8 @@ func getArgs() string {
 	return os.Args[1:][0]
 }
 
+
+
 func main() {
 	target := getArgs()
 	log.Printf("Creating site map of %q", target)
