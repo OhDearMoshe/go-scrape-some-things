@@ -27,6 +27,10 @@ To test run go test.
 To run use go run go-scrape-some-things.go <url to visit>
 
 ex: go run go-scrape-some-things.go http://www.monzo.com
+
+OR
+
+use go build and run the executable as ./go-scrape-some-things <url to visit>
 ### External Libraries
 
 You will probably need these to run this.

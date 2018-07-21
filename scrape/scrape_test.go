@@ -19,7 +19,7 @@ func TestAppendNoneVisit(t *testing.T) {
 		"/latest_news",
 	}
 
-	results := GetNoneVisit(existing, input)
+	results := GetNoneVisited(existing, input)
 
 	if len(results) != len(expected) {
 		t.Fatalf("Error expecting results of length %d but got %d", len(expected), len(results))

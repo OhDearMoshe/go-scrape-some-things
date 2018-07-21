@@ -39,7 +39,10 @@ func contains(list []string, s string) bool {
 	return false
 }
 
-func GetNoneVisit(visited []string, urls []string) []string {
+/**
+	Returns a list of all the results that are not present in the visited parameter
+ */
+func GetNoneVisited(visited []string, urls []string) []string {
 	var toVisit []string
 	for _, u := range urls {
 		if !contains(visited, u) {
@@ -48,7 +51,10 @@ func GetNoneVisit(visited []string, urls []string) []string {
 	}
 	return toVisit
 }
-
+/**
+ 	Goes to the given URL and visits the page, returns a ScrapeResult with
+	any child pages it has found and any errors it has encountered
+ */
 func FetchPage(toVisit string, baseUrl string, hostname string) ScrapeResult {
 	url := hostnames.SanatizeUrl(toVisit, baseUrl)
 	html, err := getHtmlFromUrl(url)
@@ -76,7 +82,7 @@ func Scrape(url string) []ScrapeResult {
 			results = append(results, result)
 			visited = append(visited, nextUrl)
 
-			toVisit = append(toVisit, GetNoneVisit(visited, result.Paths)...)
+			toVisit = append(toVisit, GetNoneVisited(visited, result.Paths)...)
 		}
 	}
 
