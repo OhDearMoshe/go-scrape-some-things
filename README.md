@@ -22,7 +22,10 @@ The results are in the format
 ```
 
 
-To test run go test.
+To test run:
+```bash
+go test go-scrape-some-things/...
+```
 
 To run use go run go-scrape-some-things.go  _url_to_visit_
 
