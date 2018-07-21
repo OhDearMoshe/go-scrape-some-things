@@ -2,10 +2,8 @@ package scrape
 
 import "testing"
 
-func TestAppendNoneVisit(t *testing.T) {
+func TestGetNoneVisited(t *testing.T) {
 	expected := []string{
-		"http://monzo.com",
-		"/faq",
 		"http://blog.monzo.com",
 		"/latest_news",
 	}

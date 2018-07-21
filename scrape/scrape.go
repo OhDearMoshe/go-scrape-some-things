@@ -72,17 +72,19 @@ func Scrape(url string) []ScrapeResult {
 	hostname := hostnames.ExtractHostname(url)
 	var results []ScrapeResult
 	var visited []string
-	var toVisit = []string{url}
-	for len(toVisit) > 0 {
+	toVisit := []string{url}
+
+	visitQueue := VisitQueue{toVisit}
+
+	for visitQueue.HasNext() {
 		// Pop the next result
-		nextUrl := toVisit[0]
-		toVisit = toVisit[1:]
+		nextUrl := visitQueue.GetNextToVisit()
 		if !contains(visited, nextUrl) {
 			result := FetchPage(nextUrl, url, hostname)
 			results = append(results, result)
 			visited = append(visited, nextUrl)
 
-			toVisit = append(toVisit, GetNoneVisited(visited, result.Paths)...)
+			visitQueue.AddMoreToVisit(GetNoneVisited(visited, result.Paths))
 		}
 	}
 
