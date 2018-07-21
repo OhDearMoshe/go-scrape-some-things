@@ -57,7 +57,7 @@ func TestExtractUrlsFromHtml(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	resultList := ExtractUrlsFromHtml(data)
+	resultList := UrlsFromHtml(data)
 
 	if len(frontPageUrls) != len(resultList) {
 		t.Fatalf("Error expected result size %d but got %d", len(frontPageUrls), len(resultList))

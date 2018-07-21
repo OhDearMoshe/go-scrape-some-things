@@ -3,6 +3,7 @@ package hostnames
 import (
 	"net/url"
 	"log"
+	"strings"
 )
 
 /**
@@ -21,4 +22,23 @@ func ExtractHostname(uri string) (string){
 		log.Fatal(err)
 	}
 	return u.Hostname()
+}
+
+func FilterUrls(urls []string, host string) []string {
+	var results []string
+	for _, u := range urls {
+		if len(u) > 1 {
+			if u[0] == '/' {
+				results = append(results, u)
+			}
+			// Do nothing, is just a redirect to the current page
+		  if strings.HasPrefix(u, "http://") || strings.HasPrefix(u, "https://") {
+			  hostname := ExtractHostname(u)
+			  if strings.Contains(hostname, host) {
+			  	results = append(results, u)
+			  }
+		  }
+		}
+	}
+	return results
 }

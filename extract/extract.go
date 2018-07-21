@@ -11,7 +11,7 @@ import (
 /**
  	Extracts bytes from a http.Response
  */
-func ExtractResponse(response *http.Response)  []byte{
+func FromHttpResponse(response *http.Response)  []byte{
 	bytes, err := ioutil.ReadAll(response.Body)
 	response.Body.Close()
 	if err != nil {
@@ -24,9 +24,9 @@ func ExtractResponse(response *http.Response)  []byte{
 
 /**
 	Extracts all the href's from A tags of a html page and
-	returns them back as a list
+	returns them back as a list.
  */
-func ExtractUrlsFromHtml(page []byte) []string {
+func UrlsFromHtml(page []byte) []string {
 	var links []string
 	doc, err := html.Parse(bytes.NewReader(page))
 	if err != nil {

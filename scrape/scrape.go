@@ -2,32 +2,55 @@ package scrape
 
 import (
 	"net/http"
-	"io/ioutil"
 	"log"
 	"go-scrape-some-things/extract"
+	"errors"
+	"fmt"
 )
 
 type ScrapeResult struct {
 	hostname string
 	paths []string
+	err error
 }
 
 
-func getHtmlFromUrl(url string) []byte {
+func getHtmlFromUrl(url string) ([]byte, error) {
+	log.Printf("Attempting to retrieve content from %q", url)
 	result, err := http.Get(url)
 	if result.StatusCode != 200 {
-		log.Fatal("Unable to reach %q non 200 response code recieved: %d", url, result.StatusCode)
+		message := fmt.Sprintf("Error: Unable to reach %s non 200 response code recieved: %d", url, result.StatusCode)
+		log.Printf(message)
+		return nil, errors.New(message)
 	}
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	return extract.ExtractResponse(result)
+	return extract.FromHttpResponse(result), err
 
 }
+
+
 
 func Scrape(url string, hostname string) []ScrapeResult {
 	var results []ScrapeResult
-	html := getHtmlFromUrl(url)
+	var visited []string
+	var toVisit = []string {url,}
+	for len(toVisit) > 0 {
+		nextUrl := toVisit[0]
+		toVisit = toVisit[1:]
+
+		html, err := getHtmlFromUrl(nextUrl)
+		visited = append(visited, nextUrl)
+		var urls []string
+		if err == nil {
+			urls = extract.UrlsFromHtml(html)
+			log.Printf("Found %d adjacent pages from %q", len(urls), nextUrl)
+			// Filter Urls
+			// Append to next
+		}
+
+	}
 
 	return results
 }
